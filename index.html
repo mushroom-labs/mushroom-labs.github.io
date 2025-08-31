@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Mushroom Lab</title>
-  <meta name="description" content="We grow ideas in the dark and see what glows." />
+  <meta name="description" content="We grow ideas in the dark and see what glows.">
   <meta name="theme-color" content="#0b0e12" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
@@ -15,8 +15,17 @@
   <meta property="og:image" content="assets/hero-desktop.png" />
 
   <!-- Preload heroes -->
-  <link rel="preload" as="image" href="assets/hero-desktop.png?v=1" media="(min-width: 700px)">
-  <link rel="preload" as="image" href="assets/hero-mobile.png?v=1"  media="(max-width: 699px)">
+  <link rel="preload" as="image" href="assets/hero-desktop.png" media="(min-width:700px)">
+  <link rel="preload" as="image" href="assets/hero-mobile.png"  media="(max-width:699px)">
+
+  <!-- Favicons (no version strings) -->
+  <link rel="icon" href="assets/favicon/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="assets/favicon/favicon-32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="assets/favicon/favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/favicon/apple-touch-icon.png">
+  <link rel="manifest" href="assets/favicon/site.webmanifest">
+  <link rel="mask-icon" href="assets/favicon/safari-pinned-tab.svg" color="#14ffec">
 
   <style>
     :root{
@@ -29,7 +38,7 @@
     html,body{
       margin:0;height:100%;background:var(--bg);color:var(--fg);
       font:16px/1.6 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
-      overscroll-behavior-y: contain; /* stop rubber-band fighting snap */
+      overscroll-behavior-y: contain;
     }
     a{color:var(--fg);text-underline-offset:3px;text-decoration-thickness:.08em}
     a:hover{color:var(--accent)}
@@ -38,41 +47,25 @@
     body{scroll-snap-type:y mandatory}
     section{scroll-snap-align:start; scroll-snap-stop: always; min-height:100svh}
 
-    /* HERO — image shows reliably */
+    /* HERO */
     .hero{
-    position: relative;
-    display: grid; place-items: center;
-    text-align: center; overflow: hidden;
-    background: var(--bg);                 /* no gradients here */
+      position: relative; display:grid; place-items:center; text-align:center; overflow:hidden; background:var(--bg);
     }
-
-    /* Image layer */
     .hero::before{
-    content:""; position:absolute; inset:0;
-    background-image: url('assets/hero-desktop.png?v=2'); /* desktop default */
-    background-position: center;
-    background-size: cover; background-repeat: no-repeat;
-    filter: saturate(115%) brightness(.95);
-    z-index: 0;                             /* <-- not negative */
+      content:""; position:absolute; inset:0;
+      background-image:url("assets/hero-desktop.png");
+      background-position:center; background-size:cover; background-repeat:no-repeat;
+      filter:saturate(115%) brightness(.95); z-index:0;
     }
-    @media (max-width:699px){
-    .hero::before{
-        background-image: url('assets/hero-mobile.png?v=2'); /* swap on phones */
-    }
-    }
-
-    /* Color wash + darken on top of image */
+    @media (max-width:699px){ .hero::before{ background-image:url("assets/hero-mobile.png"); } }
     .hero::after{
-    content:""; position:absolute; inset:0; pointer-events:none; z-index: 1;
-    background:
+      content:""; position:absolute; inset:0; pointer-events:none; z-index:1;
+      background:
         radial-gradient(120% 80% at 50% -10%, rgba(20,255,236,.18), transparent 60%),
         radial-gradient(110% 70% at 50% 110%, rgba(247,79,182,.10), transparent 60%),
         linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.60) 60%, rgba(0,0,0,.72));
     }
-
-    /* Make the content sit above both overlays */
-    .hero .glass{ position: relative; z-index: 2; }
-    
+    .hero .glass{ position:relative; z-index:2; }
     h1{margin:0 0 8px; font-size:clamp(40px,8vw,84px); line-height:1.05; letter-spacing:.01em}
     .tag{color:var(--muted); font-size:clamp(16px,2.2vw,22px)}
     .cta{
@@ -89,8 +82,14 @@
     .section{ display:grid; place-items:center; padding:48px 0 84px; }
     .wrap{ max-width:1120px; margin:0 auto; padding:0 20px; width:100%; }
     .heading{ font-size:28px; margin:0 0 16px }
+    /* Card uses CSS grid so we can re-order areas on mobile */
     .grid{ display:grid; gap:24px; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)) }
     .card{
+      display:grid; grid-template-areas:
+        "thumb"
+        "meta"
+        "actions";
+      gap:0;
       border:1px solid var(--border); border-radius:18px; overflow:hidden;
       background:linear-gradient(180deg,var(--card),var(--card2));
       box-shadow:0 20px 50px rgba(0,0,0,.25);
@@ -98,27 +97,35 @@
     }
     .card.reveal{opacity:1; transform:translateY(0) scale(1)}
     .thumb{
-      height:min(38vh, 360px); position:relative; display:grid; place-items:center; background:#0a0e14;
+      grid-area:thumb;
+      height:min(38vh, 360px);
+      position:relative; display:grid; place-items:center;
+      background:#0a0e14;
       background-image:radial-gradient(120% 100% at 50% 0%, rgba(20,255,236,.12), transparent 60%);
     }
     .thumb img.cover{ width:100%; height:100%; object-fit:cover; display:block; }
     .spark{ position:absolute; inset:auto auto 16px 16px; color:var(--muted); font-size:12px; letter-spacing:.08em }
-    .meta{ padding:14px 16px; color:var(--muted) }
-    .actions{ display:flex; gap:10px; padding:0 16px 16px }
+    .meta{ grid-area:meta; padding:14px 16px; color:var(--muted) }
+    .actions{
+      grid-area:actions; display:flex; gap:10px; padding:0 16px 16px;
+    }
     .btn{
       display:inline-flex; align-items:center; gap:8px; padding:10px 12px; border-radius:10px; text-decoration:none;
       border:1px solid var(--border); color:var(--fg); background:#0c1017; transition:background .2s ease, transform .1s ease
     }
     .btn:hover{ background:#111827; transform:translateY(-1px) }
 
-    /* ---------- Compact mobile layout so both cards fit ---------- */
+    /* ---------- Compact mobile + put buttons ABOVE the image ---------- */
     @media (max-width:699px){
       .section{ padding:24px 0 72px; }
       .wrap{ padding:0 14px; }
       .heading{ font-size:22px; margin-bottom:10px; }
       .grid{ grid-template-columns:1fr; gap:14px; }
-      .card{ border-radius:14px; }
-      .thumb{ height:24vh; }
+      .card{ border-radius:14px; grid-template-areas:
+        "meta"
+        "actions"   /* <-- buttons before image */
+        "thumb"; }
+      .thumb{ height:clamp(160px,26vh,300px); }
       .meta{ padding:10px 12px; font-size:14px; }
       .actions{ padding:0 12px 12px; gap:8px; }
       .btn{ padding:8px 10px; font-size:14px; }
@@ -157,8 +164,20 @@
     }
     footer.foot a{ color:var(--fg); text-decoration:none; border-bottom:1px dashed var(--accent) }
 
-    /* ---------- Elastic wave overlay ---------- */
+    /* ---------- Elastic overlay ---------- */
     canvas#wave{ position:fixed; inset:0; z-index:850; pointer-events:none; }
+
+    /* ---------- Micro-bounce for “no page change” feedback ---------- */
+    .micro-bounce{ animation: micro .28s cubic-bezier(.2,.8,.2,1) }
+    @keyframes micro{
+      0%{ transform: translateY(0) scale(1) }
+      40%{ transform: translateY(-2px) scale(1.01) }
+      100%{ transform: translateY(0) scale(1) }
+    }
+    @media (prefers-reduced-motion: reduce){
+      .micro-bounce{ animation:none }
+      .cta{ transition:none }
+    }
   </style>
 </head>
 <body>
@@ -225,7 +244,7 @@
     Inspiration: <a href="https://www.youtube.com/watch?v=kmlF2rw1weo" target="_blank" rel="noopener">mushroom playing keyboard 🎹🍄</a>
   </footer>
 
-  <!-- Elastic wave overlay -->
+  <!-- Elastic overlay -->
   <canvas id="wave" aria-hidden="true"></canvas>
 
 <script>
@@ -251,7 +270,7 @@ const setActive = id => pagerBtns.forEach(b => b.classList.toggle('active', b.da
 pagerBtns.forEach(btn => btn.addEventListener('click', () => SnapController.snapTo(btn.dataset.go === '#subs' ? 1 : 0, 0.65)));
 $('#explore')?.addEventListener('click', () => SnapController.snapTo(1, 0.75));
 
-/* ===== Elastic wave overlay (force-aware + directional gradient) ===== */
+/* ===== Elastic overlay: full transition wave + subtle nudge band ===== */
 const canvas = document.getElementById('wave');
 const ctx = canvas.getContext('2d');
 let DPR = Math.min(matchMedia('(max-width: 700px)').matches ? 1.5 : 2, window.devicePixelRatio || 1);
@@ -263,10 +282,11 @@ function startWave(direction='down', strength=0.5){
   if (waveToken) waveToken.cancelled = true;
   const token = {cancelled:false}; waveToken = token;
 
+  const clamp = (n,a,b)=>Math.max(a,Math.min(b,n));
   const lerp = (a,b,t)=>a+(b-a)*t;
-  const amp0     = lerp(18, 140, Math.max(0, Math.min(1, strength)));
-  const freq     = lerp(1.6, 3.6, strength);
-  const duration = lerp(420, 880, strength);
+  const amp0     = lerp(24, 110, clamp(strength,0,1));
+  const freq     = lerp(1.6, 3.2, strength);
+  const duration = lerp(360, 760, strength);
   const rgb      = (direction==='down') ? '20,255,236' : '255,79,182';
 
   const start = performance.now();
@@ -274,7 +294,6 @@ function startWave(direction='down', strength=0.5){
     if (token.cancelled) return;
     const t = Math.min(1, (now - start) / duration);
 
-    // springy easing (critically damp-ish)
     const omega = 14, zeta = 0.86, root = Math.sqrt(1 - zeta*zeta);
     const p = 1 - Math.exp(-zeta*omega*t) * ( Math.cos(omega*root*t) + (zeta/root)*Math.sin(omega*root*t) );
 
@@ -282,25 +301,12 @@ function startWave(direction='down', strength=0.5){
     const edgeY = dirDown ? p * innerHeight : innerHeight - p * innerHeight;
 
     const A = amp0 * Math.exp(-5.2 * t);
-    drawWave(edgeY, A, freq, rgb, dirDown);
+    drawFullWave(edgeY, A, freq, rgb, dirDown);
     if (t < 1) requestAnimationFrame(frameFn);
     else fadeWave(token, rgb);
   })(start);
 }
-function fadeWave(token, rgb){
-  const start = performance.now(), dur = 180;
-  (function f(now){
-    if (token.cancelled) return;
-    const k = Math.min(1, (now-start)/dur);
-    ctx.clearRect(0,0,innerWidth,innerHeight);
-    ctx.globalAlpha = 1 - k;
-    drawWave(innerHeight/2, 4*(1-k), 3.0, rgb, true);
-    ctx.globalAlpha = 1;
-    if (k < 1) requestAnimationFrame(f);
-    else ctx.clearRect(0,0,innerWidth,innerHeight);
-  })(start);
-}
-function drawWave(edgeY, amp, freq, rgb, fillFromTop){
+function drawFullWave(edgeY, amp, freq, rgb, fillFromTop){
   ctx.clearRect(0,0,innerWidth,innerHeight);
   ctx.beginPath();
   const steps = Math.max(24, Math.floor(innerWidth/24));
@@ -313,19 +319,68 @@ function drawWave(edgeY, amp, freq, rgb, fillFromTop){
   else { ctx.lineTo(innerWidth, innerHeight); ctx.lineTo(0, innerHeight); }
   ctx.closePath();
 
-  // directional transparency gradient
-  const grad = ctx.createLinearGradient(
-    0, fillFromTop ? 0 : edgeY,
-    0, fillFromTop ? edgeY : innerHeight
-  );
-  grad.addColorStop(0, `rgba(${rgb}, ${fillFromTop ? 0.00 : 0.36})`);
-  grad.addColorStop(1, `rgba(${rgb}, ${fillFromTop ? 0.36 : 0.00})`);
+  const grad = ctx.createLinearGradient(0, fillFromTop ? 0 : edgeY, 0, fillFromTop ? edgeY : innerHeight);
+  grad.addColorStop(0, `rgba(${rgb}, ${fillFromTop ? 0.00 : 0.30})`);
+  grad.addColorStop(1, `rgba(${rgb}, ${fillFromTop ? 0.30 : 0.00})`);
   ctx.fillStyle = grad; ctx.fill();
 
-  ctx.lineWidth = 2; ctx.strokeStyle = `rgba(${rgb}, 0.18)`; ctx.stroke();
+  ctx.lineWidth = 1.8; ctx.strokeStyle = `rgba(${rgb}, 0.14)`; ctx.stroke();
+}
+function fadeWave(token, rgb){
+  const start = performance.now(), dur = 160;
+  (function f(now){
+    if (token.cancelled) return;
+    const k = Math.min(1, (now-start)/dur);
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+    ctx.globalAlpha = 1 - k;
+    drawFullWave(innerHeight/2, 3*(1-k), 3.0, rgb, true);
+    ctx.globalAlpha = 1;
+    if (k < 1) requestAnimationFrame(f);
+    else ctx.clearRect(0,0,innerWidth,innerHeight);
+  })(start);
 }
 
-/* ===== Snap Controller (force threshold, spam-proof) ===== */
+/* Subtle nudge: narrow band near the edge (used when page doesn't change) */
+function nudgeRipple(direction='down', force=0.2){
+  const clamp = (n,a,b)=>Math.max(a,Math.min(b,n));
+  force = clamp(force, 0.08, 0.5);
+  const band = 24 + 140 * force;
+  const amp  = 4 + 18 * force;
+  const freq = 2.8;
+  const rgb  = (direction==='down') ? '20,255,236' : '255,79,182';
+
+  const start = performance.now(), dur = 320;
+  (function tick(now){
+    const t = Math.min(1, (now-start)/dur);
+    const e = 1 - Math.pow(1-t, 3);
+
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+    const edgeY = (direction==='down') ? band*e : innerHeight - band*e;
+
+    ctx.beginPath();
+    const steps = Math.max(24, Math.floor(innerWidth/18));
+    for(let i=0;i<=steps;i++){
+      const x = (i/steps)*innerWidth;
+      const y = edgeY + Math.sin(i * (Math.PI*2*freq/steps)) * (amp*(1-e));
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    if (direction==='down'){ ctx.lineTo(innerWidth, edgeY-band); ctx.lineTo(0, edgeY-band);}
+    else { ctx.lineTo(innerWidth, edgeY+band); ctx.lineTo(0, edgeY+band);}
+    ctx.closePath();
+
+    const grad = ctx.createLinearGradient(0, edgeY-(direction==='down'?band:0), 0, edgeY+(direction==='down'?0:band));
+    grad.addColorStop(0, `rgba(${rgb}, 0.00)`);
+    grad.addColorStop(1, `rgba(${rgb}, 0.22)`);
+    ctx.fillStyle = grad; ctx.fill();
+
+    ctx.lineWidth = 1; ctx.strokeStyle = `rgba(${rgb}, 0.18)`; ctx.stroke();
+
+    if (t < 1) requestAnimationFrame(tick);
+    else ctx.clearRect(0,0,innerWidth,innerHeight);
+  })(start);
+}
+
+/* ===== Snap Controller (with subtle feedback if no page change) ===== */
 const sections = ['hero','subs'].map(id => document.getElementById(id));
 const topOf = el => el.offsetTop;
 
@@ -335,12 +390,15 @@ const SnapController = (() => {
   let wheelAccum = 0;
   let wheelTimer = null;
 
+  const micro = (el) => { el.classList.remove('micro-bounce'); void el.offsetWidth; el.classList.add('micro-bounce'); };
+  const activeContent = () => (index===0 ? sections[0].querySelector('.glass') : sections[1].querySelector('.wrap'));
+
   function snapTo(newIndex, strengthFromCaller=null){
     if (locking && strengthFromCaller===null) return;
     newIndex = Math.max(0, Math.min(1, newIndex));
     if (newIndex === index && strengthFromCaller===null) return;
-    index = newIndex;
 
+    index = newIndex;
     const targetY = topOf(sections[index]);
     const dist = Math.abs(scrollY - targetY) / innerHeight;
     const strength = strengthFromCaller ?? Math.max(0.2, Math.min(1, dist));
@@ -358,7 +416,6 @@ const SnapController = (() => {
     }; arrive();
   }
 
-  /* Wheel/trackpad with small-nudge ripple */
   const SNAP_FORCE_THRESHOLD_WHEEL = 120;
   addEventListener('wheel', (e) => {
     wheelAccum += e.deltaY;
@@ -369,16 +426,16 @@ const SnapController = (() => {
       const force = Math.min(1, abs / 1200);
 
       if (abs < SNAP_FORCE_THRESHOLD_WHEEL) {
-        startWave(dir, Math.max(0.12, force * 0.6)); // ripple only
+        nudgeRipple(dir, Math.max(0.10, force * 0.6));
+        micro(activeContent());
         wheelAccum = 0;
         return;
       }
       snapTo(dir === 'down' ? 1 : 0, Math.max(0.2, force));
       wheelAccum = 0;
-    }, 180);
+    }, 160);
   }, {passive:true});
 
-  /* Touch swipe length → force */
   const SNAP_FORCE_THRESHOLD_TOUCH = 70;
   let touchStartY = null, touchAccum = 0;
   addEventListener('touchstart', (e)=>{ touchStartY = e.touches[0].clientY; touchAccum = 0; }, {passive:true});
@@ -390,7 +447,8 @@ const SnapController = (() => {
     const force = Math.min(1, abs / 420);
 
     if (abs < SNAP_FORCE_THRESHOLD_TOUCH) {
-      startWave(dir, Math.max(0.12, force * 0.6));
+      nudgeRipple(dir, Math.max(0.10, force * 0.6));
+      micro(activeContent());
     } else {
       snapTo(dir === 'down' ? 1 : 0, Math.max(0.2, force));
     }
@@ -418,7 +476,6 @@ const SnapController = (() => {
     }, 120);
   }, {passive:true});
 
-  // init
   setActive('hero');
   return { snapTo };
 })();
