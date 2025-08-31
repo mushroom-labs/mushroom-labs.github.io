@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mushroom Lab</title>
+  <meta name="description" content="We grow ideas in the dark and see what glows." />
+  <meta name="theme-color" content="#0b0e12" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <!-- Social preview -->
+  <meta property="og:title" content="Mushroom Lab" />
+  <meta property="og:description" content="We grow ideas in the dark and see what glows." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="assets/hero-desktop.png" />
+
+  <!-- Preload heroes -->
+  <link rel="preload" as="image" href="assets/hero-desktop.png?v=1" media="(min-width: 700px)">
+  <link rel="preload" as="image" href="assets/hero-mobile.png?v=1"  media="(max-width: 699px)">
+
+  <style>
+    :root{
+      color-scheme: dark;
+      --bg:#0b0e12; --fg:#e9eef2; --muted:#9aa0a6;
+      --accent:#14ffec; --accent2:#ff4fb6;
+      --border:#1b2230; --card:#0f131a; --card2:#0b0f15;
+    }
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;height:100%;background:var(--bg);color:var(--fg);
+      font:16px/1.6 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+      overscroll-behavior-y: contain; /* stop rubber-band fighting snap */
+    }
+    a{color:var(--fg);text-underline-offset:3px;text-decoration-thickness:.08em}
+    a:hover{color:var(--accent)}
+
+    /* ---------- Two full-height sections with snap ---------- */
+    body{scroll-snap-type:y mandatory}
+    section{scroll-snap-align:start; scroll-snap-stop: always; min-height:100svh}
+
+    /* HERO — image shows reliably */
+    .hero{
+    position: relative;
+    display: grid; place-items: center;
+    text-align: center; overflow: hidden;
+    background: var(--bg);                 /* no gradients here */
+    }
+
+    /* Image layer */
+    .hero::before{
+    content:""; position:absolute; inset:0;
+    background-image: url('assets/hero-desktop.png?v=2'); /* desktop default */
+    background-position: center;
+    background-size: cover; background-repeat: no-repeat;
+    filter: saturate(115%) brightness(.95);
+    z-index: 0;                             /* <-- not negative */
+    }
+    @media (max-width:699px){
+    .hero::before{
+        background-image: url('assets/hero-mobile.png?v=2'); /* swap on phones */
+    }
+    }
+
+    /* Color wash + darken on top of image */
+    .hero::after{
+    content:""; position:absolute; inset:0; pointer-events:none; z-index: 1;
+    background:
+        radial-gradient(120% 80% at 50% -10%, rgba(20,255,236,.18), transparent 60%),
+        radial-gradient(110% 70% at 50% 110%, rgba(247,79,182,.10), transparent 60%),
+        linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.60) 60%, rgba(0,0,0,.72));
+    }
+
+    /* Make the content sit above both overlays */
+    .hero .glass{ position: relative; z-index: 2; }
+    
+    h1{margin:0 0 8px; font-size:clamp(40px,8vw,84px); line-height:1.05; letter-spacing:.01em}
+    .tag{color:var(--muted); font-size:clamp(16px,2.2vw,22px)}
+    .cta{
+      margin-top:22px; padding:14px 20px; border:0; cursor:pointer; font-weight:700; border-radius:14px; color:#071013;
+      background:linear-gradient(90deg,var(--accent),var(--accent2));
+      box-shadow:0 10px 30px rgba(20,255,236,.25);
+      transition:transform .15s ease, box-shadow .2s ease;
+    }
+    .cta:hover{transform:translateY(-1px); box-shadow:0 14px 40px rgba(20,255,236,.32)}
+    .chev{display:inline-block; transform:translateY(1px); animation:bob 1.25s ease-in-out infinite}
+    @keyframes bob{0%,100%{transform:translateY(1px)}50%{transform:translateY(5px)}}
+
+    /* ---------- PDFs section ---------- */
+    .section{ display:grid; place-items:center; padding:48px 0 84px; }
+    .wrap{ max-width:1120px; margin:0 auto; padding:0 20px; width:100%; }
+    .heading{ font-size:28px; margin:0 0 16px }
+    .grid{ display:grid; gap:24px; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)) }
+    .card{
+      border:1px solid var(--border); border-radius:18px; overflow:hidden;
+      background:linear-gradient(180deg,var(--card),var(--card2));
+      box-shadow:0 20px 50px rgba(0,0,0,.25);
+      opacity:0; transform:translateY(10px) scale(.98); transition:.6s cubic-bezier(.2,.8,.2,1)
+    }
+    .card.reveal{opacity:1; transform:translateY(0) scale(1)}
+    .thumb{
+      height:min(38vh, 360px); position:relative; display:grid; place-items:center; background:#0a0e14;
+      background-image:radial-gradient(120% 100% at 50% 0%, rgba(20,255,236,.12), transparent 60%);
+    }
+    .thumb img.cover{ width:100%; height:100%; object-fit:cover; display:block; }
+    .spark{ position:absolute; inset:auto auto 16px 16px; color:var(--muted); font-size:12px; letter-spacing:.08em }
+    .meta{ padding:14px 16px; color:var(--muted) }
+    .actions{ display:flex; gap:10px; padding:0 16px 16px }
+    .btn{
+      display:inline-flex; align-items:center; gap:8px; padding:10px 12px; border-radius:10px; text-decoration:none;
+      border:1px solid var(--border); color:var(--fg); background:#0c1017; transition:background .2s ease, transform .1s ease
+    }
+    .btn:hover{ background:#111827; transform:translateY(-1px) }
+
+    /* ---------- Compact mobile layout so both cards fit ---------- */
+    @media (max-width:699px){
+      .section{ padding:24px 0 72px; }
+      .wrap{ padding:0 14px; }
+      .heading{ font-size:22px; margin-bottom:10px; }
+      .grid{ grid-template-columns:1fr; gap:14px; }
+      .card{ border-radius:14px; }
+      .thumb{ height:24vh; }
+      .meta{ padding:10px 12px; font-size:14px; }
+      .actions{ padding:0 12px 12px; gap:8px; }
+      .btn{ padding:8px 10px; font-size:14px; }
+    }
+
+    /* ---------- Modal PDF viewer ---------- */
+    .modal{ position:fixed; inset:0; display:none; place-items:center; background:rgba(5,8,12,.65); z-index:1000 }
+    .modal.open{ display:grid }
+    .box{ width:min(94vw,1100px); height:min(88vh,900px); border-radius:14px; overflow:hidden; background:#0a0e14; border:1px solid var(--border);
+      box-shadow:0 30px 80px rgba(0,0,0,.5) }
+    .box header{ padding:10px 12px; display:flex; align-items:center; justify-content:space-between;
+      background:linear-gradient(180deg,#0e131b,#0b0f15); border-bottom:1px solid var(--border) }
+    .box header .t{ color:var(--muted) }
+    .x{ background:none; border:0; color:var(--fg); font-size:20px; cursor:pointer; padding:6px 10px }
+    .frame{ width:100%; height:calc(100% - 46px); border:0 }
+
+    /* ---------- Status pager (left) ---------- */
+    .pager{
+      position:fixed; left:16px; top:50%; transform:translateY(-50%); z-index:900;
+      display:flex; flex-direction:column; gap:10px; padding:10px;
+      background:rgba(10,14,20,.45); border:1px solid rgba(255,255,255,.06); border-radius:14px;
+      backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px)
+    }
+    .pager button{
+      appearance:none; border:0; cursor:pointer; padding:8px 10px; border-radius:10px;
+      color:var(--fg); background:transparent; opacity:.7; font-weight:600;
+    }
+    .pager button:hover{ opacity:1; background:#0f141c }
+    .pager button.active{ opacity:1; background:#0f141c; outline:1px solid var(--border) }
+
+    /* ---------- Footer (center-bottom) ---------- */
+    footer.foot{
+      position:fixed; left:50%; transform:translateX(-50%); bottom:16px; z-index:900; color:var(--muted); text-align:center;
+      background:rgba(10,14,20,.5); border:1px solid rgba(255,255,255,.06); padding:8px 12px; border-radius:999px;
+      backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px)
+    }
+    footer.foot a{ color:var(--fg); text-decoration:none; border-bottom:1px dashed var(--accent) }
+
+    /* ---------- Elastic wave overlay ---------- */
+    canvas#wave{ position:fixed; inset:0; z-index:850; pointer-events:none; }
+  </style>
+</head>
+<body>
+
+  <!-- Status pager -->
+  <nav class="pager" aria-label="Sections">
+    <button class="active" data-go="#hero" aria-label="Go to hero">Lab</button>
+    <button data-go="#subs" aria-label="Go to papers">Papers</button>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div class="glass">
+      <h1>Mushroom Lab</h1>
+      <div class="tag">We grow ideas in the dark and see what glows.</div>
+      <button class="cta" id="explore">Explore <span class="chev">🍄</span></button>
+    </div>
+  </section>
+
+  <!-- PDFs -->
+  <section class="section" id="subs">
+    <div class="wrap">
+      <h2 class="heading">Anonymous Submissions</h2>
+      <div class="grid">
+        <!-- VW1 -->
+        <article class="card">
+          <div class="thumb">
+            <img class="cover" src="assets/vw1-cover.png" alt="VW1 cover: therapist mushroom & participant on chaise lounge">
+            <div class="spark">PDF • VW1</div>
+          </div>
+          <div class="meta"><strong>VW1 — “Exploratory Study — a tidy pile of chaos.”</strong></div>
+          <div class="actions">
+            <a class="btn" href="#" data-open="assets/papers/VW1.pdf">Open PDF ↗</a>
+            <a class="btn" href="assets/papers/VW1.pdf" download>Download ⤓</a>
+          </div>
+        </article>
+
+        <!-- VW2 -->
+        <article class="card">
+          <div class="thumb">
+            <img class="cover" src="assets/vw2-cover.png" alt="VW2 cover: split A/B lab with two mushrooms testing variants">
+            <div class="spark">PDF • VW2</div>
+          </div>
+          <div class="meta"><strong>VW2 — “A|B Testing — fewer regrets, more variations (still growing in the dark).”</strong></div>
+          <div class="actions">
+            <a class="btn" href="#" data-open="assets/papers/VW2.pdf">Open PDF ↗</a>
+            <a class="btn" href="assets/papers/VW2.pdf" download>Download ⤓</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- PDF modal -->
+  <div class="modal" id="modal" aria-hidden="true" role="dialog" aria-label="PDF viewer">
+    <div class="box">
+      <header><span class="t" id="mtitle">Document</span><button class="x" id="close" aria-label="Close">✕</button></header>
+      <iframe class="frame" id="frame" title="PDF preview"></iframe>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="foot">
+    Inspiration: <a href="https://www.youtube.com/watch?v=kmlF2rw1weo" target="_blank" rel="noopener">mushroom playing keyboard 🎹🍄</a>
+  </footer>
+
+  <!-- Elastic wave overlay -->
+  <canvas id="wave" aria-hidden="true"></canvas>
+
+<script>
+/* ===== Helpers ===== */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+
+/* ===== Modal viewer ===== */
+const modal = $('#modal'), frame = $('#frame'), titleEl = $('#mtitle');
+const openModal = (url) => { titleEl.textContent = url.split('/').pop(); frame.src = url + '#toolbar=0&statusbar=0&navpanes=0&view=FitH'; modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; }
+const closeModal = () => { modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); document.body.style.overflow=''; frame.src=''; }
+$('#close').onclick = closeModal;
+modal.addEventListener('click', e=>{ if(e.target===modal) closeModal(); });
+$$('[data-open]').forEach(a=>a.addEventListener('click', e=>{ e.preventDefault(); openModal(a.getAttribute('data-open')); }));
+
+/* ===== Reveal cards ===== */
+const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('reveal', e.isIntersecting)), { threshold:.2 });
+$$('.card').forEach(el => io.observe(el));
+
+/* ===== Pager & Explore ===== */
+const pagerBtns = $$('.pager button');
+const setActive = id => pagerBtns.forEach(b => b.classList.toggle('active', b.dataset.go === '#'+id));
+pagerBtns.forEach(btn => btn.addEventListener('click', () => SnapController.snapTo(btn.dataset.go === '#subs' ? 1 : 0, 0.65)));
+$('#explore')?.addEventListener('click', () => SnapController.snapTo(1, 0.75));
+
+/* ===== Elastic wave overlay (force-aware + directional gradient) ===== */
+const canvas = document.getElementById('wave');
+const ctx = canvas.getContext('2d');
+let DPR = Math.min(matchMedia('(max-width: 700px)').matches ? 1.5 : 2, window.devicePixelRatio || 1);
+function resizeCanvas(){ canvas.width = innerWidth*DPR; canvas.height = innerHeight*DPR; ctx.setTransform(DPR,0,0,DPR,0,0); }
+resizeCanvas(); addEventListener('resize', ()=>{ DPR = Math.min(matchMedia('(max-width: 700px)').matches ? 1.5 : 2, window.devicePixelRatio || 1); resizeCanvas(); }, {passive:true});
+
+let waveToken = null;
+function startWave(direction='down', strength=0.5){
+  if (waveToken) waveToken.cancelled = true;
+  const token = {cancelled:false}; waveToken = token;
+
+  const lerp = (a,b,t)=>a+(b-a)*t;
+  const amp0     = lerp(18, 140, Math.max(0, Math.min(1, strength)));
+  const freq     = lerp(1.6, 3.6, strength);
+  const duration = lerp(420, 880, strength);
+  const rgb      = (direction==='down') ? '20,255,236' : '255,79,182';
+
+  const start = performance.now();
+  (function frameFn(now){
+    if (token.cancelled) return;
+    const t = Math.min(1, (now - start) / duration);
+
+    // springy easing (critically damp-ish)
+    const omega = 14, zeta = 0.86, root = Math.sqrt(1 - zeta*zeta);
+    const p = 1 - Math.exp(-zeta*omega*t) * ( Math.cos(omega*root*t) + (zeta/root)*Math.sin(omega*root*t) );
+
+    const dirDown = direction === 'down';
+    const edgeY = dirDown ? p * innerHeight : innerHeight - p * innerHeight;
+
+    const A = amp0 * Math.exp(-5.2 * t);
+    drawWave(edgeY, A, freq, rgb, dirDown);
+    if (t < 1) requestAnimationFrame(frameFn);
+    else fadeWave(token, rgb);
+  })(start);
+}
+function fadeWave(token, rgb){
+  const start = performance.now(), dur = 180;
+  (function f(now){
+    if (token.cancelled) return;
+    const k = Math.min(1, (now-start)/dur);
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+    ctx.globalAlpha = 1 - k;
+    drawWave(innerHeight/2, 4*(1-k), 3.0, rgb, true);
+    ctx.globalAlpha = 1;
+    if (k < 1) requestAnimationFrame(f);
+    else ctx.clearRect(0,0,innerWidth,innerHeight);
+  })(start);
+}
+function drawWave(edgeY, amp, freq, rgb, fillFromTop){
+  ctx.clearRect(0,0,innerWidth,innerHeight);
+  ctx.beginPath();
+  const steps = Math.max(24, Math.floor(innerWidth/24));
+  for(let i=0;i<=steps;i++){
+    const x = (i/steps) * innerWidth;
+    const y = edgeY + Math.sin(i * (Math.PI*2*freq/steps)) * amp;
+    if (i===0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  if (fillFromTop){ ctx.lineTo(innerWidth, 0); ctx.lineTo(0, 0); }
+  else { ctx.lineTo(innerWidth, innerHeight); ctx.lineTo(0, innerHeight); }
+  ctx.closePath();
+
+  // directional transparency gradient
+  const grad = ctx.createLinearGradient(
+    0, fillFromTop ? 0 : edgeY,
+    0, fillFromTop ? edgeY : innerHeight
+  );
+  grad.addColorStop(0, `rgba(${rgb}, ${fillFromTop ? 0.00 : 0.36})`);
+  grad.addColorStop(1, `rgba(${rgb}, ${fillFromTop ? 0.36 : 0.00})`);
+  ctx.fillStyle = grad; ctx.fill();
+
+  ctx.lineWidth = 2; ctx.strokeStyle = `rgba(${rgb}, 0.18)`; ctx.stroke();
+}
+
+/* ===== Snap Controller (force threshold, spam-proof) ===== */
+const sections = ['hero','subs'].map(id => document.getElementById(id));
+const topOf = el => el.offsetTop;
+
+const SnapController = (() => {
+  let index = 0;
+  let locking = false;
+  let wheelAccum = 0;
+  let wheelTimer = null;
+
+  function snapTo(newIndex, strengthFromCaller=null){
+    if (locking && strengthFromCaller===null) return;
+    newIndex = Math.max(0, Math.min(1, newIndex));
+    if (newIndex === index && strengthFromCaller===null) return;
+    index = newIndex;
+
+    const targetY = topOf(sections[index]);
+    const dist = Math.abs(scrollY - targetY) / innerHeight;
+    const strength = strengthFromCaller ?? Math.max(0.2, Math.min(1, dist));
+    const dir = (targetY > scrollY) ? 'down' : 'up';
+
+    locking = true;
+    startWave(dir, strength);
+    window.scrollTo({ top: targetY, behavior: 'smooth' });
+
+    const stopTime = performance.now() + 900;
+    const arrive = () => {
+      if (Math.abs(scrollY - targetY) < 2 || performance.now() > stopTime) {
+        locking = false; setActive(sections[index].id);
+      } else requestAnimationFrame(arrive);
+    }; arrive();
+  }
+
+  /* Wheel/trackpad with small-nudge ripple */
+  const SNAP_FORCE_THRESHOLD_WHEEL = 120;
+  addEventListener('wheel', (e) => {
+    wheelAccum += e.deltaY;
+    if (wheelTimer) clearTimeout(wheelTimer);
+    wheelTimer = setTimeout(() => {
+      const abs = Math.abs(wheelAccum);
+      const dir = wheelAccum > 0 ? 'down' : 'up';
+      const force = Math.min(1, abs / 1200);
+
+      if (abs < SNAP_FORCE_THRESHOLD_WHEEL) {
+        startWave(dir, Math.max(0.12, force * 0.6)); // ripple only
+        wheelAccum = 0;
+        return;
+      }
+      snapTo(dir === 'down' ? 1 : 0, Math.max(0.2, force));
+      wheelAccum = 0;
+    }, 180);
+  }, {passive:true});
+
+  /* Touch swipe length → force */
+  const SNAP_FORCE_THRESHOLD_TOUCH = 70;
+  let touchStartY = null, touchAccum = 0;
+  addEventListener('touchstart', (e)=>{ touchStartY = e.touches[0].clientY; touchAccum = 0; }, {passive:true});
+  addEventListener('touchmove',  (e)=>{ if(touchStartY!=null) touchAccum = e.touches[0].clientY - touchStartY; }, {passive:true});
+  addEventListener('touchend',   ()=>{
+    if (touchStartY==null) return;
+    const abs = Math.abs(touchAccum);
+    const dir = touchAccum < 0 ? 'down' : 'up';
+    const force = Math.min(1, abs / 420);
+
+    if (abs < SNAP_FORCE_THRESHOLD_TOUCH) {
+      startWave(dir, Math.max(0.12, force * 0.6));
+    } else {
+      snapTo(dir === 'down' ? 1 : 0, Math.max(0.2, force));
+    }
+    touchStartY = null; touchAccum = 0;
+  }, {passive:true});
+
+  // Keys
+  addEventListener('keydown', (e)=>{
+    if (['ArrowDown','PageDown','Space'].includes(e.code)) { e.preventDefault(); snapTo(1); }
+    if (['ArrowUp','PageUp'].includes(e.code)) { e.preventDefault(); snapTo(0); }
+    if (e.code === 'Home') { e.preventDefault(); snapTo(0); }
+    if (e.code === 'End')  { e.preventDefault(); snapTo(1); }
+  });
+
+  // Failsafe: if user stops between sections, gently auto-align
+  let stopTimer = null;
+  addEventListener('scroll', () => {
+    if (stopTimer) clearTimeout(stopTimer);
+    stopTimer = setTimeout(() => {
+      if (locking) return;
+      const y = scrollY, t0 = topOf(sections[0]), t1 = topOf(sections[1]);
+      const near = Math.abs(y-t0) <= Math.abs(y-t1) ? 0 : 1;
+      const ty = topOf(sections[near]);
+      if (Math.abs(y - ty) > 4) snapTo(near, 0.2);
+    }, 120);
+  }, {passive:true});
+
+  // init
+  setActive('hero');
+  return { snapTo };
+})();
+
+/* ===== Footnote fade ===== */
+const foot = document.querySelector('footer.foot');
+const fadeFoot = () => foot.style.opacity = (window.scrollY > 140) ? .45 : 1;
+fadeFoot(); addEventListener('scroll', fadeFoot, {passive:true});
+</script>
+</body>
+</html>
