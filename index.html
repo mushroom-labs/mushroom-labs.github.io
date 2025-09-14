@@ -346,13 +346,40 @@
         border: 1px solid var(--border);
         color: var(--fg);
         background: #0c1017;
+        font-weight: 600;
+        position: relative;
+        overflow: hidden;
         transition:
           background 0.2s ease,
-          transform 0.1s ease;
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
       }
       .btn:hover {
         background: #111827;
-        transform: translateY(-1px);
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 8px 25px rgba(20, 255, 236, 0.2);
+      }
+      .btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transition: left 0.5s;
+      }
+      .btn:hover::before {
+        left: 100%;
+      }
+      .btn-video {
+        background: linear-gradient(135deg, #ff6b6b, #ff8e8e) !important;
+        border-color: #ff6b6b !important;
+        color: #fff !important;
+      }
+      .btn-video:hover {
+        background: linear-gradient(135deg, #ff5252, #ff7979) !important;
+        box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
       }
 
       /* ---------- Compact mobile + put buttons ABOVE the image ---------- */
@@ -573,6 +600,9 @@
               <strong>VW1 — "VariationWeaver: Scaffolding Designerly Exploration and Convergence with a Text-to-Image Model" (CHI 2026, under review)</strong>
             </div>
             <div class="actions">
+              <a class="btn btn-video" href="#" data-video="vw1"
+                >🎬 Video Intro</a
+              >
               <a class="btn" href="#" data-open="assets/papers/CHI_2026___VariationWeaver.pdf"
                 >Open PDF ↗</a
               >
@@ -598,6 +628,9 @@
               >
             </div>
             <div class="actions">
+              <a class="btn btn-video" href="#" data-video="vw2"
+                >🎬 Video Intro</a
+              >
               <a class="btn" href="#" data-open="assets/papers/VW2.pdf"
                 >Open PDF ↗</a
               >
@@ -696,6 +729,26 @@
         a.addEventListener("click", (e) => {
           e.preventDefault();
           openModal(a.getAttribute("data-open"));
+        }),
+      );
+
+      /* ===== Video button handlers ===== */
+      $$("[data-video]").forEach((btn) =>
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          const videoType = btn.getAttribute("data-video");
+          // Placeholder for video links - replace with actual Google Drive URLs
+          const videoUrls = {
+            vw1: "https://drive.google.com/file/d/YOUR_VW1_VIDEO_ID/view", // Replace with actual URL
+            vw2: "https://drive.google.com/file/d/YOUR_VW2_VIDEO_ID/view"  // Replace with actual URL
+          };
+          const url = videoUrls[videoType];
+          if (url && url.includes("YOUR_")) {
+            alert("Video coming soon! 🎬");
+          } else {
+            window.open(url, "_blank");
+          }
+          sendGA("click_video_button", { video_type: videoType });
         }),
       );
 
