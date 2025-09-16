@@ -1,4 +1,0 @@
-User-agent: *
-Disallow:
-
-Sitemap: https://YOUR-DOMAIN.tld/sitemap.xml

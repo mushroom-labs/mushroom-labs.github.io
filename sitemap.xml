@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://YOUR-DOMAIN.tld/</loc></url>
-  <url><loc>https://YOUR-DOMAIN.tld/variationweaver-canvas/</loc></url>
-  <url><loc>https://YOUR-DOMAIN.tld/variationweaver-netflix/</loc></url>
-  <url><loc>https://YOUR-DOMAIN.tld/assets/papers/CHI_2026___VariationWeaver.pdf</loc></url>
-  <url><loc>https://YOUR-DOMAIN.tld/assets/papers/VW2.pdf</loc></url>
+  <url><loc>https://mushroom-labs.github.io/</loc></url>
+  <url><loc>https://mushroom-labs.github.io/about/</loc></url>
+  <url><loc>https://mushroom-labs.github.io/variationweaver-canvas/</loc></url>
+  <url><loc>https://mushroom-labs.github.io/variationweaver-netflix/</loc></url>
+  <url><loc>https://mushroom-labs.github.io/assets/papers/CHI_2026___VariationWeaver.pdf</loc></url>
+  <url><loc>https://mushroom-labs.github.io/assets/papers/VW2.pdf</loc></url>
 </urlset>
