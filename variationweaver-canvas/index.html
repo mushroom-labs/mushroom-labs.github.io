@@ -196,18 +196,81 @@
       document.querySelector('[data-video]')?.addEventListener('click', (e) => {
         e.preventDefault();
         const videoType = e.target.getAttribute('data-video');
-        // Placeholder for video links - replace with actual Google Drive URLs
+        // Video links - Google Drive URLs
         const videoUrls = {
-          vw1: "https://drive.google.com/file/d/YOUR_VW1_VIDEO_ID/view", // Replace with actual URL
-          vw2: "https://drive.google.com/file/d/YOUR_VW2_VIDEO_ID/view"  // Replace with actual URL
+          vw1: "https://drive.google.com/file/d/1xQ6dfbCnp_UlZWrG8STaTmWXEjeFSksD/view?usp=sharing",
+          vw2: "https://drive.google.com/file/d/YOUR_VW2_VIDEO_ID/view"  // Replace with actual URL when available
         };
         const url = videoUrls[videoType];
         if (url && url.includes("YOUR_")) {
           alert("Video coming soon! 🎬");
         } else {
-          window.open(url, "_blank");
+          // Show video options modal for better user experience
+          showVideoOptions(videoType, url);
         }
       });
+
+      /* ===== Video Options Modal ===== */
+      function showVideoOptions(videoType, url) {
+        const modal = document.createElement('div');
+        modal.className = 'modal open';
+        modal.style.cssText = `
+          position: fixed;
+          inset: 0;
+          display: grid;
+          place-items: center;
+          background: rgba(5, 8, 12, 0.65);
+          z-index: 1000;
+        `;
+        modal.innerHTML = `
+          <div class="box" style="max-width: 500px; width: min(94vw, 500px); border-radius: 14px; overflow: hidden; background: #0a0e14; border: 1px solid #1b2230; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);">
+            <header style="padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; background: linear-gradient(180deg, #0e131b, #0b0f15); border-bottom: 1px solid #1b2230;">
+              <span style="color: #9aa0a6;">Watch Video</span>
+              <button onclick="this.closest('.modal').remove()" style="background: none; border: 0; color: #e9eef2; font-size: 20px; cursor: pointer; padding: 6px 10px;">✕</button>
+            </header>
+            <div style="padding: 20px;">
+              <p style="margin: 0 0 16px; color: #9aa0a6;">
+                Choose how you'd like to watch the video:
+              </p>
+              <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button class="btn" onclick="window.open('${url}', '_blank'); this.closest('.modal').remove();" style="justify-content: flex-start;">
+                  🎬 Watch in Google Drive (Recommended)
+                </button>
+                <button class="btn" onclick="downloadVideo('${url}'); this.closest('.modal').remove();" style="justify-content: flex-start;">
+                  ⬇️ Download Video (127MB)
+                </button>
+                <button class="btn" onclick="this.closest('.modal').remove();" style="justify-content: flex-start; background: #333;">
+                  Cancel
+                </button>
+              </div>
+              <p style="margin: 16px 0 0; font-size: 12px; color: #9aa0a6;">
+                💡 Tip: Google Drive provides the best viewing experience with built-in controls and mobile optimization.
+              </p>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        document.body.style.overflow = "hidden";
+        
+        // Close on backdrop click
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) modal.remove();
+        });
+      }
+
+      function downloadVideo(url) {
+        // Convert Google Drive view URL to direct download URL
+        const fileId = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/)?.[1];
+        if (fileId) {
+          const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+          const link = document.createElement('a');
+          link.href = downloadUrl;
+          link.download = 'CHI26_VariationWeaver_Video_Teaser.mp4';
+          link.click();
+        } else {
+          window.open(url, '_blank');
+        }
+      }
     </script>
   </body>
 </html>

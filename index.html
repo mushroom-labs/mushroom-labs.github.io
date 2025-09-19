@@ -737,20 +737,75 @@
         btn.addEventListener("click", (e) => {
           e.preventDefault();
           const videoType = btn.getAttribute("data-video");
-          // Placeholder for video links - replace with actual Google Drive URLs
+          // Video links - Google Drive URLs
           const videoUrls = {
-            vw1: "https://drive.google.com/file/d/YOUR_VW1_VIDEO_ID/view", // Replace with actual URL
-            vw2: "https://drive.google.com/file/d/YOUR_VW2_VIDEO_ID/view"  // Replace with actual URL
+            vw1: "https://drive.google.com/file/d/1xQ6dfbCnp_UlZWrG8STaTmWXEjeFSksD/view?usp=sharing",
+            vw2: "https://drive.google.com/file/d/YOUR_VW2_VIDEO_ID/view"  // Replace with actual URL when available
           };
           const url = videoUrls[videoType];
           if (url && url.includes("YOUR_")) {
             alert("Video coming soon! 🎬");
           } else {
-            window.open(url, "_blank");
+            // Show video options modal for better user experience
+            showVideoOptions(videoType, url);
           }
           sendGA("click_video_button", { video_type: videoType });
         }),
       );
+
+      /* ===== Video Options Modal ===== */
+      function showVideoOptions(videoType, url) {
+        const modal = document.createElement('div');
+        modal.className = 'modal open';
+        modal.innerHTML = `
+          <div class="box" style="max-width: 500px;">
+            <header>
+              <span class="t">Watch Video</span>
+              <button class="x" onclick="this.closest('.modal').remove()">✕</button>
+            </header>
+            <div style="padding: 20px;">
+              <p style="margin: 0 0 16px; color: var(--muted);">
+                Choose how you'd like to watch the video:
+              </p>
+              <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button class="btn" onclick="window.open('${url}', '_blank'); this.closest('.modal').remove();" style="justify-content: flex-start;">
+                  🎬 Watch in Google Drive (Recommended)
+                </button>
+                <button class="btn" onclick="downloadVideo('${url}'); this.closest('.modal').remove();" style="justify-content: flex-start;">
+                  ⬇️ Download Video (127MB)
+                </button>
+                <button class="btn" onclick="this.closest('.modal').remove();" style="justify-content: flex-start; background: #333;">
+                  Cancel
+                </button>
+              </div>
+              <p style="margin: 16px 0 0; font-size: 12px; color: var(--muted);">
+                💡 Tip: Google Drive provides the best viewing experience with built-in controls and mobile optimization.
+              </p>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        document.body.style.overflow = "hidden";
+        
+        // Close on backdrop click
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) modal.remove();
+        });
+      }
+
+      function downloadVideo(url) {
+        // Convert Google Drive view URL to direct download URL
+        const fileId = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/)?.[1];
+        if (fileId) {
+          const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+          const link = document.createElement('a');
+          link.href = downloadUrl;
+          link.download = 'CHI26_VariationWeaver_Video_Teaser.mp4';
+          link.click();
+        } else {
+          window.open(url, '_blank');
+        }
+      }
 
       /* NOTE: We do NOT send a custom download event here to avoid duplicating GA4's built-in `file_download` event. */
 
